@@ -1,4 +1,4 @@
-package com.app.auth.auth_app_backend.services;
+package com.app.auth.auth_app_backend.services.impl;
 
 import com.app.auth.auth_app_backend.dtos.UserDto;
 import com.app.auth.auth_app_backend.entities.Provider;
@@ -6,6 +6,7 @@ import com.app.auth.auth_app_backend.entities.User;
 import com.app.auth.auth_app_backend.exceptions.ResourceNotFoundException;
 import com.app.auth.auth_app_backend.healpers.UserHelper;
 import com.app.auth.auth_app_backend.repositories.UserRepository;
+import com.app.auth.auth_app_backend.services.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
