@@ -42,6 +42,8 @@ public class SecurityConfig {
                 auth-> auth
                         .requestMatchers("/api/v1/auth/register").permitAll()
                         .requestMatchers("/api/v1/auth/login").permitAll()
+                        .requestMatchers("/api/v1/auth/refresh").permitAll()
+                        .requestMatchers("/api/v1/auth/logout").permitAll()
                         .anyRequest().authenticated()
 
                  )
@@ -61,8 +63,6 @@ public class SecurityConfig {
                     var apiError= ApiError.of(HttpStatus.UNAUTHORIZED.value(), "Unauthorized Access !  ",message ,request.getRequestURI() , true );
                     var mapper = new ObjectMapper();
                     response.getWriter().write(mapper.writeValueAsString(apiError));
-
-
 
                 } ))
 

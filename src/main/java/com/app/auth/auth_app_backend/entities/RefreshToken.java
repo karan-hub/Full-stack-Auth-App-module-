@@ -34,4 +34,10 @@ public class RefreshToken {
     @Column(updatable = false, nullable = false)
     private Instant expiresAt ;
 
+    @Column(name = "replaced_by_token")
+    private  boolean revoked;
+
+    @Column(name = "revoked")
+    private  String  replacedByToken;
+
 }
