@@ -4,21 +4,22 @@ import com.app.auth.auth_app_backend.entities.Role;
 import com.app.auth.auth_app_backend.entities.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.security.Key;
 import java.sql.Date;
 import java.time.Instant;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 @Service
+@Getter
+@Setter
 public class JwtService {
 
     private   final SecretKey key;
@@ -27,14 +28,14 @@ public class JwtService {
     private  final String issuer;
 
     public JwtService(
-            @Value("${security.jwt.secrete}") String  secrete ,
+            @Value("${security.jwt.secret}") String secret,
             @Value("${security.jwt.access-ttl-seconds}") long accessTtlSeconds,
             @Value("${security.jwt.refresh-ttl-seconds}") long refreshTtlSeconds,
             @Value("${security.jwt.issuer}") String issuer) {
 
-        if (secrete ==null || secrete.length() <64)
+        if (secret ==null || secret.length() <64 || secret.trim().isEmpty())
             throw  new IllegalArgumentException("Invalid  Secrete");
-        this.key = Keys.hmacShaKeyFor(secrete.getBytes(StandardCharsets.UTF_8));
+        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
 
         AccessTtlSeconds = accessTtlSeconds;
         RefreshTtlSeconds = refreshTtlSeconds;
@@ -58,7 +59,7 @@ public class JwtService {
                         "roles" , roles,
                         "typ" ,"access"
                 ))
-                .signWith(key , SignatureAlgorithm.ES256)
+                .signWith(key , SignatureAlgorithm.HS512)
                 .compact();
     }
 
@@ -72,7 +73,7 @@ public class JwtService {
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plusSeconds(AccessTtlSeconds)))
                 .claim("typ" , "refresh")
-                .signWith(key , SignatureAlgorithm.ES256)
+                .signWith(key , SignatureAlgorithm.HS512)
                 .compact();
     }
 
