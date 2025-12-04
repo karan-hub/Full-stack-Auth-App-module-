@@ -63,7 +63,7 @@ public class JwtService {
                 .compact();
     }
 
-    public  String refreshToken(User user , String  jti ){
+    public  String generateRefreshToken(User user , String  jti ){
         Instant now= Instant.now();
 
         return Jwts.builder()
