@@ -75,32 +75,32 @@ public class Oauth2SuccessHandler implements AuthenticationSuccessHandler {
                         );
             }
 
-//            case "github"->{
-//                String email = oAuth2User.getAttributes().getOrDefault("email", "").toString();
-//                String githubId = oAuth2User.getAttributes().getOrDefault("id", "").toString();
-//                String name = oAuth2User.getAttributes().getOrDefault("login", "").toString();
-//                String picture = oAuth2User.getAttributes().getOrDefault("avatar_url", "").toString();
-//
-//                user = userRepository.findByEmail(email)
-//                        .map(existingUser -> {
-//                            logger.info("User already exists in DB");
-//                            logger.info(existingUser.toString());
-//                            return existingUser;
-//                        })
-//                        .orElseGet(
-//                                () -> {
-//                                    User newUser = User.builder()
-//                                            .name(name)
-//                                            .image(picture)
-//                                            .email(email)
-//                                            .enable(true)
-//                                            .providerId(githubId)
-//                                            .provider(Provider.GITHUB)
-//                                            .build();
-//                                    logger.info("Saving new Google user");
-//                                    return userRepository.save(newUser);
-//                                }
-//                        );
+            case "github"->{
+                String email = oAuth2User.getAttributes().getOrDefault("email", "").toString();
+                String githubId = oAuth2User.getAttributes().getOrDefault("id", "").toString();
+                String name = oAuth2User.getAttributes().getOrDefault("login", "").toString();
+                String picture = oAuth2User.getAttributes().getOrDefault("avatar_url", "").toString();
+
+                user = userRepository.findByEmail(email)
+                        .map(existingUser -> {
+                            logger.info("User already exists in DB");
+                            logger.info(existingUser.toString());
+                            return existingUser;
+                        })
+                        .orElseGet(
+                                () -> {
+                                    User newUser = User.builder()
+                                            .name(name)
+                                            .image(picture)
+                                            .email(email)
+                                            .enable(true)
+                                            .providerId(githubId)
+                                            .provider(Provider.GITHUB)
+                                            .build();
+                                    logger.info("Saving new Google user");
+                                    return userRepository.save(newUser);
+                                }
+                        );
             }
 
             default -> throw new RuntimeException("Invalid Registration Id");
