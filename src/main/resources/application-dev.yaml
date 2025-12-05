@@ -64,3 +64,10 @@ security:
     cookie-http-only: ${JWT_COOKIE_HTTP_ONLY:true}
     cookie-same-site: ${JWT_COOKIE_SITE:Strict}
     cookie-domain: ${JWT_COOKIE_DOMAIN:localhost}
+
+
+app:
+  auth:
+    frontend:
+      success-redirect: http://localhost:8082/auth/success
+      failure-redirect: http://localhost:8082/auth/failure

@@ -9,9 +9,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.LoggerFactory;
 import  org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.config.annotation.rsocket.RSocketSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -25,8 +27,11 @@ import java.util.UUID;
 
 @Slf4j
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class Oauth2SuccessHandler implements AuthenticationSuccessHandler {
+
+    @Value("${app.auth.frontend.success-redirect}")
+    private String  frontendSuccessUrl;
 
     private  final UserRepository userRepository;
     private  final JwtService jwtService ;
@@ -76,11 +81,16 @@ public class Oauth2SuccessHandler implements AuthenticationSuccessHandler {
             }
 
             case "github"->{
-                String email = oAuth2User.getAttributes().getOrDefault("email", "").toString();
-                String githubId = oAuth2User.getAttributes().getOrDefault("id", "").toString();
+                String email = (String) oAuth2User.getAttributes().getOrDefault("email", "");
+                String githubId =  oAuth2User.getAttributes().getOrDefault("id", "").toString();
                 String name = oAuth2User.getAttributes().getOrDefault("login", "").toString();
                 String picture = oAuth2User.getAttributes().getOrDefault("avatar_url", "").toString();
 
+
+                if (email == null)
+                    email = name+"@null.com";
+
+                String finalEmail = email;
                 user = userRepository.findByEmail(email)
                         .map(existingUser -> {
                             logger.info("User already exists in DB");
@@ -92,7 +102,7 @@ public class Oauth2SuccessHandler implements AuthenticationSuccessHandler {
                                     User newUser = User.builder()
                                             .name(name)
                                             .image(picture)
-                                            .email(email)
+                                            .email(finalEmail)
                                             .enable(true)
                                             .providerId(githubId)
                                             .provider(Provider.GITHUB)
@@ -119,14 +129,7 @@ public class Oauth2SuccessHandler implements AuthenticationSuccessHandler {
         String refreshToken = jwtService.generateRefreshToken(user, refreshTokenOb.getJti());
         cookieService.attachRefreshCookie(response, refreshToken , (int) jwtService.getRefreshTtlSeconds());
 
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.getWriter().write(
-                "{\"message\":\"Login Successful\", \"accessToken\":\"" + accessToken + "\"}"
-        );
-        response.flushBuffer();
-
-        response.getWriter().write("Successful  Login");
+        logger.info("Redirecting to frontend success page...");
+        response.sendRedirect(frontendSuccessUrl + "?token=" + accessToken);
     }
 }
