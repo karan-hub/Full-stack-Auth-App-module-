@@ -150,9 +150,3 @@ This project does not include an explicit license in the repository. Add one if 
 
 ---
 
-If you want, I can also:
-
-- Add a `.env.example` with the required environment variables
-- Create a Dockerfile + `docker-compose.yml` for local DB + app
-- Add CI workflow to run tests and build artifacts
-
